@@ -3,6 +3,8 @@ package com.example.cards.Dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
@@ -23,12 +25,15 @@ public class CardsDto {
 
     @Schema(description = "Amount used up from Card" , example = "65485")
     @NotEmpty(message = "Amount used Cannot be Empty")
+    @PositiveOrZero(message = "Amount Used Should be Zero or Greater than 0")
     public int amountUsed;
 
     @Schema(description = "Total Limit in Card" , example = "80000")
     @NotEmpty(message = "Total Limit Cannot be Empty")
+    @Positive(message = "Total Limit should be Greater Than Zero")
     public int totalLimit;
 
+    @PositiveOrZero(message = "Available Amount Should be Zero or Greater than 0")
     @Schema(description = "Available Balance in Card" , example = "14515")
     @NotEmpty(message = "Available Amount Cannot be Empty")
     public int availableAmount;
