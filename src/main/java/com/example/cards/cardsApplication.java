@@ -28,10 +28,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 				description = "Cards microservice REST API Documentation",
 				url = "http://localhost:9000/swagger-ui.html"
 ))
-public class CardsApplication {
+public class cardsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CardsApplication.class, args);
+		SpringApplication.run(cardsApplication.class, args);
 	}
 
 }
