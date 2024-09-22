@@ -1,6 +1,7 @@
 package com.example.cards.Controller;
 
 import com.example.cards.Contants.CardConstants;
+import com.example.cards.Dto.CardsApplicationFetchingDto;
 import com.example.cards.Dto.CardsDto;
 import com.example.cards.Dto.ErrorResponseDto;
 import com.example.cards.Dto.ResponseDto;
@@ -12,20 +13,36 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("v1/cards/")
-@AllArgsConstructor
 @Tag(name = "Cards Controller",
         description = "All APIs for Cards Creation,Upgrading and Deletion"
 )
 
 public class CardsController {
 
-    private ICardsService cardsService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    private final ICardsService cardsService;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private CardsApplicationFetchingDto cardsApplicationFetchingDto;
+
+    public CardsController(ICardsService cardsService) {
+        this.cardsService = cardsService;
+    }
 
     @Operation(
             description = "Create Card API",
@@ -136,4 +153,92 @@ public class CardsController {
         }
 
     }
+    @Operation(
+            description = "Update Card API",
+            summary = "This API helps to update old Card"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Card Has been Updated"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Card update failed"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    })
+
+    @GetMapping("/version")
+    public ResponseEntity<String> getBuildInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+
+    @Operation(
+            summary = "Get Environment Variable Info",
+            description = "Get Environment Variable info of Project deployed"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Environment value of Local system is returned"
+
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Exception Failed"
+
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal Server Error",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDto.class
+                            )
+                    )
+            )}
+    )
+    @GetMapping("/envVariables")
+    public ResponseEntity<String> getEnvironmentDetails(){
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("MAVEN_HOME"));
+    }
+
+    @Operation(
+            summary = "Get configuration properties from env file",
+            description = "Get you configuration properties done in application.yml file"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Environment value of Local system is returned"
+
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Exception Failed"
+
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal Server Error",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDto.class
+                            )
+                    )
+            )}
+    )
+    @GetMapping("/contact-info")
+    public ResponseEntity<CardsApplicationFetchingDto> getConfigurationProperties(){
+        return ResponseEntity.status(HttpStatus.OK).body(cardsApplicationFetchingDto);
+    }
+
 }
